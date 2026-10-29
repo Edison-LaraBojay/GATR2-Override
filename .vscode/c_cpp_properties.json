@@ -1,0 +1,38 @@
+{
+  "configurations": [
+    {
+      "name": "Robot (PROS)",
+      "compilerPath": "${env:APPDATA}/Code/User/globalStorage/sigbots.pros/install/pros-toolchain-windows/usr/bin/arm-none-eabi-g++.exe",
+      "cStandard": "gnu17",
+      "cppStandard": "gnu++20",
+      "intelliSenseMode": "gcc-arm",
+      "includePath": [
+        "${workspaceFolder}/2026-27/include",
+        "${workspaceFolder}/lib/spectaGATR/brain/include",
+        "${workspaceFolder}/lib/spectaGATR/protocol/include",
+        "${workspaceFolder}/lib/gatr2/include",
+        "${workspaceFolder}/lib/locaGATR/include",
+        "${workspaceFolder}/lib/naviGATR/include",
+        "${workspaceFolder}/../GATR2-Electronics/brain/locaGATR/include",
+        "${workspaceFolder}/../GATR2-Electronics/pico/locaGATR/include"
+      ],
+      "defines": [
+        "_PROS_KERNEL_SUPPRESS_LLEMU_WARNING"
+      ]
+    },
+    {
+      "name": "Laptop (spectaGATR receiver)",
+      "compilerPath": "C:/msys64/ucrt64/bin/g++.exe",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "windows-gcc-x64",
+      "includePath": [
+        "${workspaceFolder}/lib/spectaGATR",
+        "${workspaceFolder}/lib/spectaGATR/brain/include",
+        "${workspaceFolder}/lib/spectaGATR/protocol/include",
+        "${workspaceFolder}/build-spectagatr/_deps/googletest-src/googletest/include"
+      ]
+    }
+  ],
+  "version": 4
+}

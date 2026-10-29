@@ -1,0 +1,67 @@
+// control_board_source.cpp
+
+#include "locagatr/sources/control_board_source.h"
+
+#include "locagatr/smart_port.h"
+
+namespace locagatr
+{
+
+bool ControlBoardSource::buildTable() {
+    by_type_.fill(nullptr);
+    for (const RecordDecoder* decoder : decoders_) {
+        const RecordDecoder*& slot = by_type_[decoder->sensorType()];
+        if (slot != nullptr) {
+            return false; // two decoders for one sensor type
+        }
+        slot = decoder;
+    }
+    return true;
+}
+
+bool ControlBoardSource::begin(const Config& config) {
+    if (!buildTable()) {
+        return false;
+    }
+    const std::optional<Io> io = openSmartPort(config.robot.board_port, config.robot.board_baud);
+    if (!io) {
+        return false;
+    }
+    Timing timing;
+    timing.reply_timeout_us = config.robot.board_reply_timeout_us;
+    link_.emplace(*io, timing);
+    return true;
+}
+
+void ControlBoardSource::read(SensorMap& sensors) {
+    const Poll poll = link_->transact();
+    decode(poll, link_->stats(), sensors);
+}
+
+void ControlBoardSource::decode(const Poll& poll, const LinkStats& stats, SensorMap& sensors) {
+    BoardStatus& board = sensors.board;
+    board.fresh        = poll.fresh;
+    board.restarted    = poll.restarted;
+    board.requests     = stats.requests;
+    board.replies      = stats.replies;
+    board.timeouts     = stats.timeouts;
+
+    if (poll.answered) {
+        for (std::size_t i = 0; i < poll.readings.count; ++i) {
+            const brainlink::Record& record  = poll.readings.records[i];
+            const RecordDecoder*     decoder = by_type_[record.sensor_type];
+            if (decoder != nullptr) {
+                decoder->decode(record, sensors);
+            } else {
+                ++unhandled_;
+                last_type_ = record.sensor_type;
+                last_port_ = record.port;
+            }
+        }
+    }
+    board.unhandled_records   = unhandled_;
+    board.last_unhandled_type = last_type_;
+    board.last_unhandled_port = last_port_;
+}
+
+} // namespace locagatr
