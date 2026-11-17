@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-#include "navigatr/pipeline.h"
+#include "navigatr/profiles/profile.h"
 
 namespace navigatr
 {

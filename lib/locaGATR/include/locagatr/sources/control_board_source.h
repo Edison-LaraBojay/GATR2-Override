@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "locagatr/link.h"
-#include "locagatr/pipeline.h"
+#include "locagatr/sources/source.h"
 #include "locagatr/sources/decoders/encoder_count_decoder.h"
 #include "locagatr/sources/decoders/record_decoder.h"
 

@@ -34,7 +34,7 @@ include(GoogleTest)
 add_library(navigatr STATIC
     src/route.cpp
     src/path.cpp
-    src/trajectory.cpp
+    src/profiles/profile.cpp
     src/pipeline.cpp
     src/profiles/trapezoid_profile.cpp
     src/followers/holonomic_follower.cpp

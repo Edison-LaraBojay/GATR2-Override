@@ -4,7 +4,7 @@
 
 #pragma once
 #include "navigatr/pid.h"
-#include "navigatr/pipeline.h"
+#include "navigatr/followers/follower.h"
 
 namespace navigatr
 {

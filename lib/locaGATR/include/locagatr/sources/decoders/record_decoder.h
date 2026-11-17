@@ -5,7 +5,7 @@
 #include <cstdint>
 
 #include "brainlink/wire.h"
-#include "locagatr/pipeline.h"
+#include "locagatr/sources/source.h"
 
 namespace locagatr
 {

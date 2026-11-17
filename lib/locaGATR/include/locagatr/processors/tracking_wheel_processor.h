@@ -5,7 +5,7 @@
 #pragma once
 #include <vector>
 
-#include "locagatr/pipeline.h"
+#include "locagatr/processors/processor.h"
 
 namespace locagatr
 {

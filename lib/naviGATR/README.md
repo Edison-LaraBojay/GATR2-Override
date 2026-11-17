@@ -67,8 +67,9 @@ the rest of the route still runs.
 
 ## Pipeline
 
-The whole route is planned first, then each move runs in `Pipeline::run()`
-([pipeline.cpp](src/pipeline.cpp)):
+The Navigator task ([navigator.cpp](pros/navigator.cpp)) calls
+`Pipeline::run()` ([pipeline.cpp](src/pipeline.cpp)) once per route. The whole
+route is planned first, then each step runs:
 
 ```
 1. path      segments -> Path
@@ -78,11 +79,12 @@ then every tick:
 4. drive     command -> motors
 ```
 
-| Stage | Implementations |
-|---|---|
-| Profile | `TrapezoidProfile` (default): slower in tight curves and fast heading changes |
-| Follower | `HolonomicFollower` (default): path velocity plus PID on x, y, heading |
-| Drive | `MecanumDrive` |
+| Stage | Base | Implementations |
+|---|---|---|
+| Path | [path.h](include/navigatr/path.h) | `samplePath` |
+| Profile | [profiles/profile.h](include/navigatr/profiles/profile.h) | `TrapezoidProfile` (default): slower in tight curves and fast heading changes |
+| Follower | [followers/follower.h](include/navigatr/followers/follower.h) | `HolonomicFollower` (default): path velocity plus PID on x, y, heading |
+| Drive | [drives/drive.h](include/navigatr/drives/drive.h) | `MecanumDrive` |
 
 `Config` ([config.h](include/navigatr/config.h)) picks the implementations and
 holds the limits, gains, tolerances and the shared `gatr2::Robot`.

@@ -46,7 +46,8 @@ Robot frame: +x forward, +y left.
 
 ## Pipeline
 
-Each tick, `rate_hz` times a second, in `Pipeline::tick()`
+Each tick, `rate_hz` times a second, the Localizer task
+([localizer.cpp](pros/localizer.cpp)) calls `Pipeline::tick()`
 ([pipeline.cpp](src/pipeline.cpp)):
 
 ```
@@ -58,12 +59,12 @@ Each tick, `rate_hz` times a second, in `Pipeline::tick()`
 `Config` ([config.h](include/locagatr/config.h)) lists what runs in each
 stage. `enabled = false` turns an entry off without deleting it.
 
-| Stage | Implementations |
-|---|---|
-| Sources | `VexImuSource`, `ControlBoardSource`, `MotorEncoderSource` |
-| Control board decoders | `EncoderCountDecoder` (default) |
-| Processors | `TrackingWheelProcessor`, `WheelPairProcessor`, `ImuProcessor`, `DriveMotorProcessor` |
-| Estimator | `OdometryEstimator` (default) |
+| Stage | Base | Implementations |
+|---|---|---|
+| Sources | [sources/source.h](include/locagatr/sources/source.h) | `VexImuSource`, `ControlBoardSource`, `MotorEncoderSource` |
+| Control board decoders | [sources/decoders/record_decoder.h](include/locagatr/sources/decoders/record_decoder.h) | `EncoderCountDecoder` (default) |
+| Processors | [processors/processor.h](include/locagatr/processors/processor.h) | `TrackingWheelProcessor`, `WheelPairProcessor`, `ImuProcessor`, `DriveMotorProcessor` |
+| Estimator | [estimators/estimator.h](include/locagatr/estimators/estimator.h) | `OdometryEstimator` (default) |
 
 Processors give measurements as totals since start, so a missed tick loses
 nothing:
@@ -124,6 +125,7 @@ encoders, so 100 Hz at most. `overruns` counts slow ticks.
 
 ## Adding an implementation
 
+Derive from the stage base above, in the same folder:
 `sources/<what>_source.h`, `sources/decoders/<what>_decoder.h`,
 `processors/<what>_processor.h` or `estimators/<what>_estimator.h`. Source in
 `src/` (`pros/` if it calls PROS), a test in `tests/`, both in

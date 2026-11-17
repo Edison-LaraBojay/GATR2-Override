@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "navigatr/pipeline.h"
+#include "navigatr/path.h"
 
 namespace navigatr
 {

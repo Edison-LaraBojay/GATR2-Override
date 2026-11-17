@@ -1,13 +1,19 @@
 // pipeline.h
-// The path following pipeline, per move in a Route:
+// The path following loop. The Navigator task calls run() once per route
+// (pros/navigator.cpp). Portable: pose and time come in through Io.
 //
-//   1. path      segments -> Path
-//   2. profile   Path -> Trajectory          (Profile)
-//   then every tick:
-//   3. follow    pose + target -> command    (Follower)
-//   4. drive     command -> motors           (Drive)
+//   Outcome Pipeline::run(route) {
+//       plan(route);                                    // per move, before it drives:
+//                                                       //   1. path     samplePath(segments)
+//                                                       //   2. profile  profile_->build(path)
+//       for (step : route)                              // then each step in order,
+//           every tick until settled:                   // rate_hz times a second:
+//               command = follower_->update(pose, target, dt);  // 3. follow
+//               drive_->apply(command);                         // 4. drive
+//   }
 //
-// Portable: pose and time come in through Io.
+// Stages: path.h, profiles/profile.h, followers/follower.h, drives/drive.h.
+// What runs in each: Config.
 
 #pragma once
 #include <cstddef>
@@ -17,99 +23,15 @@
 #include <vector>
 
 #include "navigatr/config.h"
+#include "navigatr/drives/drive.h"
+#include "navigatr/followers/follower.h"
+#include "navigatr/path.h"
+#include "navigatr/profiles/profile.h"
 #include "navigatr/route.h"
 #include "navigatr/types.h"
 
 namespace navigatr
 {
-
-// --- 1. Path ---
-
-struct PathPoint {
-    double x         = 0; // in
-    double y         = 0; // in
-    double s         = 0; // in along the path
-    double tangent   = 0; // deg, the way the path goes
-    double curvature = 0; // 1/in, counterclockwise positive
-    double heading   = 0; // deg, the way the robot should face; continuous
-};
-
-struct Path {
-    struct Marker {
-        double                       s = 0; // in along the path
-        const std::function<void()>* run = nullptr;
-    };
-    std::vector<PathPoint> points;
-    std::vector<Marker>    markers; // in order of s
-
-    double length() const { return points.empty() ? 0.0 : points.back().s; }
-};
-
-// One move, sampled. Markers point into the segments.
-Path samplePath(const std::vector<Segment>& segments, int samples_per_segment = 64);
-
-// --- 2. Profile ---
-
-struct TrajectoryPoint {
-    double t            = 0; // s from the start of the move
-    double s            = 0; // in along the path
-    double x            = 0;
-    double y            = 0;
-    double v            = 0; // in/s along the path
-    double tangent      = 0; // deg
-    double heading      = 0; // deg, continuous
-    double heading_rate = 0; // deg/s
-};
-
-struct Trajectory {
-    std::vector<TrajectoryPoint> points;
-
-    double duration() const { return points.empty() ? 0.0 : points.back().t; }
-    // Past the end: the end, at rest.
-    TrajectoryPoint at(double t) const;
-};
-
-class Profile {
-  public:
-    virtual ~Profile() = default;
-    virtual const char* name() const = 0;
-    virtual bool        begin(const Config&) { return true; }
-    virtual Trajectory  build(const Path& path) const = 0;
-};
-
-// --- 3. Follow ---
-
-// Where the robot should be now, and how fast it should be moving.
-struct Target {
-    double x         = 0;
-    double y         = 0;
-    double heading   = 0; // deg
-    double vx        = 0; // in/s, field frame
-    double vy        = 0; // in/s
-    double turn_rate = 0; // deg/s
-};
-
-class Follower {
-  public:
-    virtual ~Follower() = default;
-    virtual const char*   name() const = 0;
-    virtual bool          begin(const Config&) { return true; }
-    virtual void          reset() {} // a new step starts
-    virtual ChassisSpeeds update(const Pose& pose, const Target& target, double dt) = 0;
-};
-
-// --- 4. Drive ---
-
-class Drive {
-  public:
-    virtual ~Drive() = default;
-    virtual const char* name() const = 0;
-    virtual bool        begin(const Config&) { return true; }
-    virtual void        apply(const ChassisSpeeds& speeds) = 0;
-    virtual void        stop() = 0;
-};
-
-// --- The loop ---
 
 struct Io {
     std::function<Pose()>         pose;        // the localizer's newest pose
@@ -119,7 +41,7 @@ struct Io {
     std::function<void(double)>   progress;    // optional. Driving distance covered, 0 to 1
 };
 
-// Stages 1 and 2 for the whole route, before it moves.
+// Stages 1 and 2 for one move.
 struct MovePlan {
     Path       path;
     Trajectory trajectory;

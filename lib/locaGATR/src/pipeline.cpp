@@ -8,6 +8,25 @@
 namespace locagatr
 {
 
+Tick Pipeline::tick(uint64_t now_us) {
+    Tick t;
+    t.sensors.time_us = now_us;
+    t.sensors.dt      = previous_us_ ? (now_us - *previous_us_) / 1e6 : 0.0;
+    previous_us_      = now_us;
+
+    // 1. Acquisition.
+    for (Source* source : sources_) {
+        source->read(t.sensors);
+    }
+    // 2. Processing.
+    for (Processor* processor : processors_) {
+        processor->process(t.sensors, t.motion);
+    }
+    // 3. Estimation.
+    t.estimate = estimator_->update(t.motion, t.sensors);
+    return t;
+}
+
 namespace
 {
 
@@ -54,25 +73,6 @@ bool Pipeline::begin() {
 
     setPose(config_.start_pose);
     return ok;
-}
-
-Tick Pipeline::tick(uint64_t now_us) {
-    Tick t;
-    t.sensors.time_us = now_us;
-    t.sensors.dt      = previous_us_ ? (now_us - *previous_us_) / 1e6 : 0.0;
-    previous_us_      = now_us;
-
-    // 1. Acquisition.
-    for (Source* source : sources_) {
-        source->read(t.sensors);
-    }
-    // 2. Processing.
-    for (Processor* processor : processors_) {
-        processor->process(t.sensors, t.motion);
-    }
-    // 3. Estimation.
-    t.estimate = estimator_->update(t.motion, t.sensors);
-    return t;
 }
 
 void Pipeline::setPose(const Pose& pose) {

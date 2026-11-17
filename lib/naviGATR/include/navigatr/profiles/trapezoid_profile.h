@@ -3,7 +3,7 @@
 // fast heading changes.
 
 #pragma once
-#include "navigatr/pipeline.h"
+#include "navigatr/profiles/profile.h"
 
 namespace navigatr
 {

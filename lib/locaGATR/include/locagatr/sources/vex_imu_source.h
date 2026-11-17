@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 
-#include "locagatr/pipeline.h"
+#include "locagatr/sources/source.h"
 
 namespace locagatr
 {

@@ -55,7 +55,7 @@ GATR2_LIB_INC_locagatr := \
 GATR2_LIB_SRC_navigatr := \
 	$(GATR2_LIB_ROOT)/naviGATR/src/route.cpp \
 	$(GATR2_LIB_ROOT)/naviGATR/src/path.cpp \
-	$(GATR2_LIB_ROOT)/naviGATR/src/trajectory.cpp \
+	$(GATR2_LIB_ROOT)/naviGATR/src/profiles/profile.cpp \
 	$(GATR2_LIB_ROOT)/naviGATR/src/pipeline.cpp \
 	$(GATR2_LIB_ROOT)/naviGATR/src/profiles/trapezoid_profile.cpp \
 	$(GATR2_LIB_ROOT)/naviGATR/src/followers/holonomic_follower.cpp \

@@ -1,9 +1,9 @@
-// trajectory.cpp
+// profile.cpp
 // Reading a Trajectory by time.
 
 #include <algorithm>
 
-#include "navigatr/pipeline.h"
+#include "navigatr/profiles/profile.h"
 
 namespace navigatr
 {

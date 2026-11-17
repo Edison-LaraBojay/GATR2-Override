@@ -3,7 +3,7 @@
 // TrackingWheelProcessor.
 
 #pragma once
-#include "locagatr/pipeline.h"
+#include "locagatr/processors/processor.h"
 
 namespace locagatr
 {

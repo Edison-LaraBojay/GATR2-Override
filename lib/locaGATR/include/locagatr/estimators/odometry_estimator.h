@@ -6,7 +6,7 @@
 #pragma once
 #include <array>
 
-#include "locagatr/pipeline.h"
+#include "locagatr/estimators/estimator.h"
 
 namespace locagatr
 {

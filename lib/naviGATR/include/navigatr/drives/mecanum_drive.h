@@ -5,7 +5,7 @@
 #pragma once
 #include <array>
 
-#include "navigatr/pipeline.h"
+#include "navigatr/drives/drive.h"
 
 namespace navigatr
 {
