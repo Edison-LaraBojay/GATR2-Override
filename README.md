@@ -34,3 +34,9 @@ pros c apply kernel@4.2.2 --force-apply --no-download
 git checkout -- .gitignore
 pros make
 ```
+
+## Contributing
+
+Changes reach `main` only through a PR: threads resolved, `build` passing,
+up to date, one code owner approval, merged by the owner. The rules are on
+GitHub under Settings, Rules.
